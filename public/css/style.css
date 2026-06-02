@@ -24,16 +24,28 @@ body{
     filter: invert(1);
 }
 
+hr{
+    background-image: url('/images/hrsmile.gif');
+    height: 25px;
+    border: 0;
+}
+
+img,
+video,
+iframe,
+svg,
+canvas {
+    filter: invert(1);
+}
+
+.inverted {
+    filter: invert(0);
+}
+
 #content{
     margin: 32px;
 }
 
 #footer{
     text-align: center;
-}
-
-hr{
-    background-image: url('/images/hrsmile.gif');
-    height: 25px;
-    border: 0;
 }
