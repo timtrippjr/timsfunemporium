@@ -1,0 +1,39 @@
+*{
+    box-sizing: border-box;
+}
+
+html, body{
+    min-height: 100vh;
+}
+
+html{
+    background-image: url('/images/spacebackground.gif');
+}
+
+body{
+    background-color: white;
+    background-image: url('/images/childsani_border.gif');
+
+    font-family: Arial, Helvetica, sans-serif;
+
+    margin: auto;
+    padding: 16px 64px;
+    width: 778px;
+
+    /* this rocks!! */
+    filter: invert(1);
+}
+
+#content{
+    margin: 32px;
+}
+
+#footer{
+    text-align: center;
+}
+
+hr{
+    background-image: url('/images/hrsmile.gif');
+    height: 25px;
+    border: 0;
+}
