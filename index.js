@@ -19,7 +19,7 @@ app.get('/tictactoe', (req, res) => {
 
 io.on('connection', (socket) => {
     console.log('a user connected: ' + socket.id);
-    io.emit('rooms updated', [...io.sockets.adapter.rooms]);
+    io.emit('rooms updated', io.sockets.adapter.rooms.keys());
 
     socket.on('join game', (data)=>{
         console.log(socket.id + ' wants to join '+ data);
@@ -29,7 +29,7 @@ io.on('connection', (socket) => {
     });
 
     socket.on('disconnect', () => {
-        io.emit('rooms updated', [...io.sockets.adapter.rooms]);
+        io.emit('rooms updated', io.sockets.adapter.rooms.keys());
     });
 });
 

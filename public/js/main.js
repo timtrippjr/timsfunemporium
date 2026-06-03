@@ -1,7 +1,10 @@
 var socket = io();
 
 function refreshRooms(rooms){
-    for (room of rooms){
+    console.log('refresh rooms');
+    for (const room of rooms){
+        if (room)
+        console.log(room);
         const roomDiv = document.createElement('div');
         roomDiv.className = 'room';
 
@@ -17,7 +20,6 @@ function refreshRooms(rooms){
 }
 
 socket.on('connect', ()=>{
-    console.log('hello connect');
     document.getElementById('loggedInMsg')
         .innerText = 'logged in as: ' + socket.id;
 });
