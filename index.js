@@ -1,9 +1,7 @@
 const express = require('express');
 const { Server } = require("socket.io");
 
-const app = express();
-const server = require('http').createServer(app);
-
+const server = require('http').createServer(express());
 const io = new Server(server);
 
 app.use(express.static('public'));
@@ -34,6 +32,6 @@ io.on('connection', (socket) => {
 });
 
 const port = 3000;
-app.listen(port, () => {
+server.listen(port, () => {
     console.log(`Example app listening on port http://localhost:${port}/`);
 });
