@@ -42,10 +42,20 @@ canvas {
     filter: invert(0);
 }
 
+.room {
+    margin:8px;
+    padding:8px;
+    border: 1px solid black;
+}
+
 #content{
     margin: 32px;
 }
 
 #footer{
     text-align: center;
+}
+
+#rooms{
+    font-family: 'Times New Roman', Times, serif;
 }

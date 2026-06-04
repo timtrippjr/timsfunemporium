@@ -1,21 +1,29 @@
 var socket = io();
 
 function refreshRooms(rooms){
-    console.log('refresh rooms');
+    console.log('refresh rooms',rooms);
+
+    const roomsDiv = document.getElementById('rooms');
+    roomsDiv.innerText = '';
+
     for (const room of rooms){
-        if (room)
-        console.log(room);
         const roomDiv = document.createElement('div');
         roomDiv.className = 'room';
 
         const roomTitle = document.createElement('strong');
-        roomTitle.innerText = room;
+        roomTitle.innerText = room[0];
 
         const kawaiiJoinButton = document.createElement('button');
+        kawaiiJoinButton.innerText = 'join button bruh bruh';
+        kawaiiJoinButton.style = 'float:right;'
         kawaiiJoinButton.className = 'joinButton';
         kawaiiJoinButton.addEventListener('click', (e)=>{
             socket.emit('join game', user);
         });
+
+        roomDiv.appendChild(roomTitle);
+        roomDiv.appendChild(kawaiiJoinButton);
+        roomsDiv.appendChild(roomDiv);
     }
 }
 
