@@ -6,9 +6,11 @@ const server = require('http').createServer(app);
 
 const io = new Server(server);
 
+//config
 app.use(express.static('public'));
 app.set('view engine', 'pug');
 
+//routes
 app.get('/', (req, res) => {
     res.render('index');
 });
@@ -17,23 +19,26 @@ app.get('/tictactoe', (req, res) => {
     res.render('tictactoe');
 });
 
-io.on('connection', (socket) => {
-    console.log('a user connected: ' + socket.id);
-    io.emit('rooms updated', Array.from(io.sockets.adapter.rooms.entries()));
-
-    socket.on('join game', (data)=>{
-        console.log(socket.id + ' wants to join '+ data);
-        socket.join(data);
-        io.emit('rooms updated');
-        socket.emit('successfully joined', data);
-    });
-
-    socket.on('disconnect', () => {
-        io.emit('rooms updated', Array.from(io.sockets.adapter.rooms.entries()));
-    });
-});
-
 const port = 3000;
 server.listen(port, () => {
     console.log(`Example app listening on port http://localhost:${port}/`);
+});
+
+//helpers
+function emitRoomsUpdated(){
+    io.emit('rooms updated', Array.from(io.sockets.adapter.rooms.entries()));
+}
+
+//connection
+io.on('connection', (socket) => {
+    emitRoomsUpdated();
+    socket.on('disconnect', () => {
+        emitRoomsUpdated();
+    });
+
+    socket.on('join game', (room)=>{
+        socket.join(room);
+        console.log(socket.id + ' joined '+ room);
+        io.to(room).emit('successfully joined', room);
+    });
 });

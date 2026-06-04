@@ -2,12 +2,22 @@ extends layout
 
 append content 
     em#loggedInMsg not logged in
-    h2 make a room:
-    div 
-        label(for="") 
-        input(type="text" ) 
-        button make room
     
-    h2 all tic tac toe rooms:
-    div#rooms
-        em something went wrong.
+    //
+        h2 make a room:
+        div 
+            label(for="") 
+            input(type="text" ) 
+            button make room
+
+    #gameContainer
+        canvas#game(width='320px' height='320px')
+        hr
+    
+    #roomsContainer
+        h2 all tic tac toe rooms:
+        #rooms
+            em something went wrong.
+
+append scripts 
+    script(src='/js/tictactoe.js')

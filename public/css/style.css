@@ -2,6 +2,10 @@
     box-sizing: border-box;
 }
 
+h2{
+    margin: 0;
+}
+
 html, body{
     min-height: 100vh;
 }
@@ -30,6 +34,7 @@ hr{
     border: 0;
 }
 
+hr,
 img,
 video,
 iframe,
@@ -42,14 +47,21 @@ canvas {
     filter: invert(0);
 }
 
-.room {
-    margin:8px;
+.room{
+    margin-left:48px;
+    margin-bottom: 10px;
     padding:8px;
     border: 1px solid black;
 }
+.room:last-child{
+    margin-bottom: 0;
+}
+.room ul{
+    margin: 0;
+}
 
 #content{
-    margin: 32px;
+    margin: 16px 32px;
 }
 
 #footer{
@@ -58,4 +70,9 @@ canvas {
 
 #rooms{
     font-family: 'Times New Roman', Times, serif;
+}
+
+#game{
+    display:block;
+    margin: auto;
 }
