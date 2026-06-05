@@ -6,32 +6,30 @@ socket.on('rooms updated', (rooms) => {
     const roomsDiv = document.getElementById('rooms');
     roomsDiv.innerText = '';
 
-    for (const room of rooms){
-        const roomName = room[0];
-        const roomUsers = room[1];
+    for (const [room, users] of Object.entries(rooms)){
 
-        if (roomName == socket.id) continue;
+        if (room == socket.id) continue;
 
         const roomDiv = newElem('div', roomsDiv);
         roomDiv.className = 'room';
 
         const roomTitle = newElem('strong', roomDiv);
-        roomTitle.innerText = roomName;
+        roomTitle.innerText = room;
 
         const kawaiiJoinButton = newElem('button', roomDiv);
         kawaiiJoinButton.innerText = 'join button bruh bruh';
         kawaiiJoinButton.style = 'float:right;'
         kawaiiJoinButton.className = 'joinButton';
         kawaiiJoinButton.addEventListener('click', (e)=>{
-            socket.emit('join game', roomName);
+            socket.emit('join game', room);
         });
 
-        /*console.log(roomUsers);
+        console.log(users);
         const innerRooms = newElem('ul', roomDiv);
-        for (const roomUser of roomUsers){
+        for (const user of users){
             const innerRoom = newElem('li', innerRooms);
-            innerRoom.innerText = roomUser;
-        }*/
+            innerRoom.innerText = user;
+        }
     }
 });
 
@@ -42,11 +40,12 @@ socket.on('connect', ()=>{
 
 // show game board, hide available rooms.
 socket.on('successfully joined', (data)=>{
-    const notif = newElem('div', document.getElementById('content'));
+    console.log(socket.id + ' joined ' + data);
+    /*const notif = newElem('div', document.getElementById('content'));
     notif.className += 'successnotif ';
-    notif.innerHTML = 'successfully joined user: ' + data;
+    notif.innerHTML = 'successfully joined user: ' + data;*/
 
-    document.getElementById('roomsContainer').remove();
+    //document.getElementById('roomsContainer').remove();
 });
 
 const canvas = document.getElementById('game');

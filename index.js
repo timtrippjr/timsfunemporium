@@ -26,7 +26,15 @@ server.listen(port, () => {
 
 //helpers
 function emitRoomsUpdated(){
-    io.emit('rooms updated', Array.from(io.sockets.adapter.rooms.entries()));
+    const roomsObject = Object.fromEntries(
+        [...io.sockets.adapter.rooms.entries()].map(([room, sockets]) => [
+            room,
+            [...sockets]
+        ])
+    );
+
+    console.log(roomsObject);
+    io.emit('rooms updated', roomsObject);
 }
 
 //connection
@@ -39,6 +47,7 @@ io.on('connection', (socket) => {
     socket.on('join game', (room)=>{
         socket.join(room);
         console.log(socket.id + ' joined '+ room);
+        emitRoomsUpdated();
         io.to(room).emit('successfully joined', room);
     });
 });
