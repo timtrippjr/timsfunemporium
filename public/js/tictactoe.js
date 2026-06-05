@@ -20,11 +20,12 @@ class Game{
         this.ctx.fillStyle = 'gray';
 
         const barWidth = 2;
+        const padding = 10;
         
         this.ctx.fillRect(
             (this.canvas.clientWidth / 3) - (barWidth / 2), 
-            (this.canvas.clientHeight / 3) - (barWidth / 2), 
-            barWidth, this.canvas.clientHeight - (this.canvas.clientHeight / 3)
+            padding, 
+            barWidth, this.canvas.clientHeight - (padding * 2)
         );
     }
 }
