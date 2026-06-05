@@ -43,6 +43,10 @@ canvas {
     filter: invert(1);
 }
 
+canvas{
+    border: solid 1px gray;
+}
+
 .inverted {
     filter: invert(0);
 }
