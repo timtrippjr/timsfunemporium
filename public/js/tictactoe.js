@@ -1,10 +1,17 @@
 var socket = io();
+var game;
 
 const roomsCont = document.getElementById('roomsContainer');
 const gameCont = document.getElementById('gameContainer');
-gameCont.style.display = 'none';
-
-var game;
+function showGame(){
+    roomsCont.style.display = 'none';
+    gameCont.style.display = 'block';
+}
+function showRooms(){
+    gameCont.style.display = 'none';
+    roomsCont.style.display = 'block';
+}
+showRooms();
 
 class Game{
     constructor(gameId){
@@ -12,6 +19,8 @@ class Game{
         this.ctx = this.canvas.getContext('2d');
 
         this.tileSize = this.canvas.clientWidth / 3;
+        console.log(this.canvas.clientWidth);
+        console.log(this.tileSize);
 
         this.canvasClicked = this.canvasClicked.bind(this);
         this.canvas.addEventListener('click', this.canvasClicked);
@@ -19,11 +28,16 @@ class Game{
         // when receiving a msg from server
         this.state = null;
         this.room = null;
+        this.winner = null;
 
         // html stuff
         this.turnInd = document.getElementById('turnIndicator');
 
         this.drawBoard();
+    }
+    
+    destroy() {
+        this.canvas.removeEventListener('click', this.canvasClicked);
     }
 
     drawBoard(){
@@ -62,6 +76,10 @@ class Game{
     }
 
     canvasClicked(event) {
+        if (!this.state) return;
+        if (!this.room) return;
+        if (this.winner) return;
+
         const rect = this.canvas.getBoundingClientRect();
 
         const x = event.clientX - rect.left;
@@ -69,10 +87,11 @@ class Game{
 
         const c = Math.floor(x/this.tileSize);
         const r = Math.floor(y/this.tileSize);
-        console.log(`Canvas coordinates: (${c}, ${r})`);
+        //console.log(`Canvas coordinates: (${c}, ${r})`);
+        //console.log("canvas clicked");
 
         if (this.state.turn == socket.id){
-            console.log('SEND MESSAGE SET RC AS MY ID ON SERVER SEND BACK TO BOTH CLIENTS');
+            console.log('room '+this.room);
             socket.emit('game set symbol', {
                 room: this.room,
                 id: socket.id, 
@@ -87,6 +106,11 @@ class Game{
         this.turnInd.innerText = this.state.turn+'\'s turnb';
         if (this.state.turn == socket.id) 
             this.turnInd.innerText = 'YOUR TURNB';
+
+        if (this.winner)
+            game.turnInd.innerText = 'YOU '+(
+                this.winner == socket.id? 'WON': 'LOST'
+            )+"!! ";
 
         // update board appearance (where x and os are)
         const xPlayer = this.state.x;
@@ -133,7 +157,7 @@ socket.on('rooms updated', (rooms) => {
         const users = data.users;
         const joinable = data.joinable;
 
-        console.log('joinable '+ joinable);
+        //console.log('joinable '+ joinable);
         //if (room == socket.id) continue;
 
         const roomDiv = newElem('div', roomsDiv);
@@ -146,13 +170,11 @@ socket.on('rooms updated', (rooms) => {
         }else if(joinable){
             const kawaiiJoinButton = newElem('button', roomDiv);
             kawaiiJoinButton.innerText = 'join button bruh bruh';
-            kawaiiJoinButton.style = 'float:right;'
-            kawaiiJoinButton.className = 'joinButton';
+            kawaiiJoinButton.className = 'joinButton floatr';
             kawaiiJoinButton.addEventListener('click', (e)=>{
-                socket.emit('join game', room);
+                socket.emit('game join', room);
             });
         }
-
 
         //console.log(users);
         const innerRooms = newElem('ul', roomDiv);
@@ -171,19 +193,62 @@ socket.on('connect', ()=>{
 });
 // show game board, hide available rooms.
 socket.on('game begin', (data)=>{
-    console.log(socket.id + ' joined ' + JSON.stringify(data));
+    console.log(socket.id + ' joined ' + data.room);
 
-    roomsCont.style.display = 'none';
-    gameCont.style.display = 'block';
-
+    showGame();
+    if(game)
+        game.destroy();
     game = new Game('game');
     game.room = data.room;
     game.state = data.state;
     game.update();
 });
 
-socket.on('game update', (data)=>{
+socket.on('game end', (data)=>{
+    game.winner = data.winner;
     game.room = data.room;
     game.state = data.state;
     game.update();
+
+    // draw line over winning pattern.
+    // eventually data will contain endpts of line to draw!
+    console.log(data.line);
+
+    const ctx = game.ctx;
+    ctx.lineWidth = 14;
+    ctx.strokeStyle = 'yellow';
+    ctx.beginPath();
+    ctx.moveTo(
+        game.tileSize * data.line.start.x + (game.tileSize / 2), 
+        game.tileSize * data.line.start.y + (game.tileSize / 2)
+    );
+    ctx.lineTo(
+        game.tileSize * data.line.end.x + (game.tileSize / 2), 
+        game.tileSize * data.line.end.y + (game.tileSize / 2)
+    );
+    ctx.stroke();   
+})
+
+socket.on('game leave',()=>{
+    if (game) {
+        game.destroy();
+        game = null;
+    }
+    showRooms();
+});
+
+socket.on('game update', (data)=>{
+    game.room = data.room;
+    game.state = data.state;
+    game.winner = null;
+    game.update();
+});
+
+document.getElementById('gameRESET').addEventListener('click',(e)=>{
+    socket.emit('game reset', game.room);
+});
+
+document.getElementById('gameLEAVE').addEventListener('click',(e)=>{
+    console.log(socket.id + ' leaves '+game.room);
+    socket.emit('game leave', game.room);
 });

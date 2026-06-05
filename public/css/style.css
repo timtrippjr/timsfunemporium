@@ -55,6 +55,10 @@ canvas{
     text-align: center;
 }
 
+.floatr{
+    float:right;
+}
+
 .room{
     margin-left:48px;
     margin-bottom: 10px;
