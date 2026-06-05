@@ -129,7 +129,11 @@ socket.on('rooms updated', (rooms) => {
     const roomsDiv = document.getElementById('rooms');
     roomsDiv.innerText = '';
 
-    for (const [room, users] of Object.entries(rooms)){
+    for (const [room, data] of Object.entries(rooms)){
+        const users = data.users;
+        const joinable = data.joinable;
+
+        console.log('joinable '+ joinable);
         //if (room == socket.id) continue;
 
         const roomDiv = newElem('div', roomsDiv);
@@ -139,7 +143,7 @@ socket.on('rooms updated', (rooms) => {
         roomTitle.innerText = room;
         if (room == socket.id) {
             roomTitle.innerText += ' (you)';
-        }else{
+        }else if(joinable){
             const kawaiiJoinButton = newElem('button', roomDiv);
             kawaiiJoinButton.innerText = 'join button bruh bruh';
             kawaiiJoinButton.style = 'float:right;'

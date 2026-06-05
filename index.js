@@ -25,21 +25,23 @@ server.listen(port, () => {
     console.log(`Example app listening on port http://localhost:${port}/`);
 });
 
+//connection
+const gameStates = {};
+
 //helpers
 function emitRoomsUpdated(){
     const roomsObject = Object.fromEntries(
         [...io.sockets.adapter.rooms.entries()].map(([room, sockets]) => [
-            room,
-            [...sockets]
+            room, {   
+                users: [...sockets],
+                joinable: !(room in gameStates)
+            }
         ])
     );
 
     console.log(roomsObject);
     io.emit('rooms updated', roomsObject);
 }
-
-//connection
-const gameStates = {};
 
 io.on('connection', (socket) => {
     emitRoomsUpdated();
