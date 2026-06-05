@@ -1,4 +1,5 @@
 const express = require('express');
+const { stat } = require('fs');
 const { Server } = require("socket.io");
 
 const app = express();
@@ -38,6 +39,8 @@ function emitRoomsUpdated(){
 }
 
 //connection
+const gameStates = {};
+
 io.on('connection', (socket) => {
     emitRoomsUpdated();
     socket.on('disconnect', () => {
@@ -48,6 +51,37 @@ io.on('connection', (socket) => {
         socket.join(room);
         console.log(socket.id + ' joined '+ room);
         emitRoomsUpdated();
-        io.to(room).emit('successfully joined', room);
+
+        gameStates[room] = {
+            x: socket.id,
+            o: room,
+
+            // will be ids
+            board: [
+                [null, null, null],
+                [null, null, null],
+                [null, null, null],
+            ],
+            turn: room
+        };
+
+        io.to(room).emit('game begin', {
+            room,
+            state: gameStates[room]
+        });
+    });
+
+    socket.on('game set symbol', (data)=>{
+        const room = data.room;
+        const state = gameStates[room];
+        state.board[data.at.r][data.at.c] = data.id;
+
+        //advance turn
+        state.turn = state.turn == state.x? state.o: state.x;
+
+        io.to(room).emit('game update', {
+            room,
+            state
+        });
     });
 });

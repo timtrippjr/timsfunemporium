@@ -51,6 +51,10 @@ canvas{
     filter: invert(0);
 }
 
+.centered{
+    text-align: center;
+}
+
 .room{
     margin-left:48px;
     margin-bottom: 10px;
