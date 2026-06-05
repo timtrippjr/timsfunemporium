@@ -74,7 +74,16 @@ io.on('connection', (socket) => {
     socket.on('game set symbol', (data)=>{
         const room = data.room;
         const state = gameStates[room];
-        state.board[data.at.r][data.at.c] = data.id;
+
+        const {r, c} = data.at;
+
+        // ignore if tile already has something!!!
+        if (state.board[r][c] != null)
+            return;
+
+        state.board[r][c] = data.id;
+
+        // check if somebody has won. if so, emit 'game end'
 
         //advance turn
         state.turn = state.turn == state.x? state.o: state.x;
