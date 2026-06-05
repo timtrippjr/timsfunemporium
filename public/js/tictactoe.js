@@ -15,6 +15,17 @@ class Game{
             this.canvas.clientWidth, 
             this.canvas.clientHeight
         );
+
+        // draw the lines of a tictactoe board
+        this.ctx.fillStyle = 'gray';
+
+        const barWidth = 2;
+        
+        this.ctx.fillRect(
+            (this.canvas.clientWidth / 3) - (barWidth / 2), 
+            (this.canvas.clientHeight / 3) - (barWidth / 2), 
+            barWidth, this.canvas.clientHeight - (this.canvas.clientHeight / 3)
+        );
     }
 }
 
