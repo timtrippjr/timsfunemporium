@@ -29,12 +29,20 @@ server.listen(port, () => {
 const gameStates = {};
 
 //helpers
+function isSocketBusy(socketId) {
+    const socket = io.sockets.sockets.get(socketId);
+    if (!socket) return true;
+
+    return socket.rooms.size > 1;
+}
 function emitRoomsUpdated(){
     const roomsObject = Object.fromEntries(
         [...io.sockets.adapter.rooms.entries()].map(([room, sockets]) => [
             room, {   
                 users: [...sockets],
-                joinable: !(room in gameStates) && sockets.size < 2
+                joinable: !(room in gameStates) && 
+                sockets.size < 2 &&
+                !isSocketBusy(room)
             }
         ])
     );
@@ -96,7 +104,7 @@ io.on('connection', (socket) => {
 
     socket.on('game join', (room)=>{
         socket.join(room);
-        console.log(socket.id + ' joined '+ room);
+        //console.log(socket.id + ' joined '+ room);
         emitRoomsUpdated();
 
         if (gameStates[room]) {
@@ -123,7 +131,7 @@ io.on('connection', (socket) => {
         }
         emitRoomsUpdated();
 
-        console.log(socket.id + ' LEFT '+ room);
+        //console.log(socket.id + ' LEFT '+ room);
     });
 
     socket.on('game set symbol', (data)=>{
@@ -174,7 +182,7 @@ io.on('connection', (socket) => {
     });
 
     socket.on('game reset', (room)=>{
-        console.log('i was told to reset and i DID because im COOL')
+        //console.log('i was told to reset and i DID because im COOL')
         gameStates[room].board = [
             [null, null, null],
             [null, null, null],
